@@ -31,7 +31,6 @@ public class HibernateConfiguration
     @Bean
     public LocalSessionFactoryBean sessionFactory()
     {
-        System.out.println("Hibernate configuration sessionFactory");
         LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
         sessionFactory.setDataSource(dataSource());
         sessionFactory.setPackagesToScan(new String[] {"it/si2001/model"});
@@ -42,7 +41,6 @@ public class HibernateConfiguration
     @Bean
     public DataSource dataSource()
     {
-        System.out.println("Hibernate configuration datasource");
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("jdbc.driverClassName"));
         dataSource.setUrl(environment.getRequiredProperty("jdbc.url"));

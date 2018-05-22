@@ -31,6 +31,7 @@ public class EmployeeDaoImpl extends AbstractDao<Integer,Employee> implements Em
     public List<Employee> findAllEmployees()
     {
         Criteria criteria = createEntityCriteria();
+        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         return (List<Employee>) criteria.list();
     }
 }

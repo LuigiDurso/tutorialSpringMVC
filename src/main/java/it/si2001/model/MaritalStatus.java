@@ -1,0 +1,45 @@
+package it.si2001.model;
+
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+
+@Entity
+@Table(name = "maritalstatus")
+public class MaritalStatus implements Serializable
+{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "idMaritalStatus")
+    private int id;
+    @Column(name = "StatoCivile")
+    private String statoCivile;
+
+    public MaritalStatus()
+    {
+
+    }
+
+    public MaritalStatus(String statoCivile)
+    {
+        this.statoCivile = statoCivile;
+    }
+
+    public String getStatoCivile() {
+        return statoCivile;
+    }
+
+    public void setStatoCivile(String statoCivile) {
+        this.statoCivile = statoCivile;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MaritalStatus that = (MaritalStatus) o;
+        return this.statoCivile.equals(((MaritalStatus) o).getStatoCivile());
+    }
+}

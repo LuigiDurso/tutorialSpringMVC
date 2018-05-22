@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Model che rappresenta degli impiegati
@@ -24,6 +25,19 @@ public class Employee implements Serializable
     private String surname;
     @Column(name = "Country")
     private String country;
+    @NotEmpty
+    @Column(name = "BirthDate")
+    private String birthDate;
+    @ManyToOne()
+    @JoinColumn(name="MaritalStatus", nullable=false)
+    private MaritalStatus maritalStatus;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "Employee_Skills",
+            joinColumns = { @JoinColumn(name = "idemployee") },
+            inverseJoinColumns = { @JoinColumn(name = "idSkills") }
+    )
+    private List<Skill> skills;
 
     public Employee()
     {
@@ -67,5 +81,29 @@ public class Employee implements Serializable
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(String birthDate) {
+        this.birthDate = birthDate;
+    }
+
+    public MaritalStatus getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    public void setMaritalStatus(MaritalStatus maritalStatus) {
+        this.maritalStatus = maritalStatus;
+    }
+
+    public List<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<Skill> skills) {
+        this.skills = skills;
     }
 }
