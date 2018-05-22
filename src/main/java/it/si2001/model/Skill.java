@@ -13,6 +13,8 @@ public class Skill
     private int id;
     @Column(name = "Skill")
     private String skill;
+    @ManyToMany(mappedBy = "skills")
+    List<Employee> employees;
 
     public Skill()
     {
@@ -33,5 +35,13 @@ public class Skill
 
     public void setSkill(String skill) {
         this.skill = skill;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 }

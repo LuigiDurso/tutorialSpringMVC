@@ -22,7 +22,7 @@ public class EmployeeDaoImpl extends AbstractDao<Integer,Employee> implements Em
 
     public void deleteEmployeeById(int id)
     {
-        Query query = getSession().createSQLQuery("delete from Employee where id = :id");
+        Query query = getSession().createQuery("delete from Employee e where e.id = :id");
         query.setInteger("id",id);
         query.executeUpdate();
     }

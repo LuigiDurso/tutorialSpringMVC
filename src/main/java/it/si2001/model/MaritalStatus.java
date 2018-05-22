@@ -16,6 +16,8 @@ public class MaritalStatus implements Serializable
     private int id;
     @Column(name = "StatoCivile")
     private String statoCivile;
+    @OneToMany(mappedBy="maritalStatus")
+    private List<Employee> employees;
 
     public MaritalStatus()
     {
@@ -33,6 +35,14 @@ public class MaritalStatus implements Serializable
 
     public void setStatoCivile(String statoCivile) {
         this.statoCivile = statoCivile;
+    }
+
+    public List<Employee> getEmployees() {
+        return employees;
+    }
+
+    public void setEmployees(List<Employee> employees) {
+        this.employees = employees;
     }
 
     @Override
