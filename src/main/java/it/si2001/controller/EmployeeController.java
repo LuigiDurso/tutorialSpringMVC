@@ -1,9 +1,10 @@
 package it.si2001.controller;
 
 import it.si2001.model.Employee;
+import it.si2001.model.Skill;
 import it.si2001.service.EmployeeService;
+import it.si2001.service.SkillService;
 import it.si2001.utils.Notification;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,11 +23,15 @@ public class EmployeeController
     EmployeeService employeeService;
 
     final
+    SkillService skillService;
+
+    final
     MessageSource messageSource;
 
-    public EmployeeController(EmployeeService employeeService, MessageSource messageSource)
+    public EmployeeController(EmployeeService employeeService, SkillService skillService, MessageSource messageSource)
     {
         this.employeeService = employeeService;
+        this.skillService = skillService;
         this.messageSource = messageSource;
     }
 
@@ -37,6 +42,19 @@ public class EmployeeController
         List<Employee> employees=employeeService.findAllEmployees();
         model.addAttribute("employees",employees);
         return "index";
+    }
+
+    @RequestMapping(value = "/newEmployee", method = RequestMethod.GET)
+    public String newEmployee (ModelMap model)
+    {
+        Employee e=new Employee();
+        model.addAttribute("employee",e);
+
+        List<Skill> skills=skillService.findAllSkills();
+        model.addAttribute("skills",skills);
+
+        model.addAttribute("edit",false);
+        return "registration";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)

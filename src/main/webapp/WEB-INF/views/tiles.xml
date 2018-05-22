@@ -17,4 +17,10 @@
         <put-attribute name="body" value="/WEB-INF/views/pages/index.jsp" />
     </definition>
 
+    <!-- Form page for registration/edit Employee -->
+    <definition name="registration" extends="base-definition">
+        <put-attribute name="title" value="Registration page" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/registration.jsp" />
+    </definition>
+
 </tiles-definitions>

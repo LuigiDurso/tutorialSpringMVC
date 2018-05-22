@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%--
   Created by IntelliJ IDEA.
   User: SI2001
@@ -13,7 +14,7 @@
         </div>
         <ul class="nav navbar-nav">
             <li class="active"><a href="/">Home</a></li>
-            <c:url value="" var = "addEmployee">
+            <c:url value="/newEmployee" var = "addEmployee">
                 <c:param name = "id" value = "-1"/>
             </c:url>
             <li class="active"><a href="${addEmployee}">New Employee</a></li>
