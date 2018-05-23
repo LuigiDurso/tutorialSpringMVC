@@ -8,6 +8,7 @@
     <definition name="base-definition" template="/WEB-INF/views/layouts/defaultLayout.jsp">
         <put-attribute name="title" value="" />
         <put-attribute name="header" value="/WEB-INF/views/templates/defaultHeader.jsp" />
+        <put-attribute name="notification" value="/WEB-INF/views/templates/defaultNotifications.jsp" />
         <put-attribute name="body" value="" />
     </definition>
 
@@ -21,6 +22,18 @@
     <definition name="registration" extends="base-definition">
         <put-attribute name="title" value="Registration page" />
         <put-attribute name="body" value="/WEB-INF/views/pages/registration.jsp" />
+    </definition>
+
+    <!-- Login page for Employee -->
+    <definition name="login" extends="base-definition">
+        <put-attribute name="title" value="Login page" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/login.jsp" />
+    </definition>
+
+    <!-- Login page for Employee -->
+    <definition name="accessDenied" extends="base-definition">
+        <put-attribute name="title" value="Access Denied" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/deniedPage.jsp" />
     </definition>
 
 </tiles-definitions>

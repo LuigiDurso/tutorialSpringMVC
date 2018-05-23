@@ -9,6 +9,8 @@ public interface EmployeeDao
 
     Employee findById(int id);
 
+    Employee findByUsername(String name);
+
     void saveEmployee(Employee employee);
 
     void deleteEmployeeById(int id);

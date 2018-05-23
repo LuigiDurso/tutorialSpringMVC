@@ -4,6 +4,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,6 +18,12 @@ public class Employee implements Serializable
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idemployee")
     private int id;
+    @NotEmpty
+    @Column(name="username", unique=true, nullable=false)
+    private String username;
+    @NotEmpty
+    @Column(name="password", nullable=false)
+    private String password;
     @NotEmpty
     @Column(name = "Name")
     private String name;
@@ -39,6 +46,13 @@ public class Employee implements Serializable
     )
     private List<Skill> skills;
 
+    @NotEmpty
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_profile_joinTable",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "user_profile_id") })
+    private List<UserProfile> userProfiles;
+
     public Employee()
     {
 
@@ -57,6 +71,30 @@ public class Employee implements Serializable
 
     public void setId(int id) {
         id = id;
+    }
+
+    public List<UserProfile> getUserProfiles() {
+        return userProfiles;
+    }
+
+    public void setUserProfiles(List<UserProfile> userProfiles) {
+        this.userProfiles = userProfiles;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {

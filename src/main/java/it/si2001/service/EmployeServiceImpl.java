@@ -2,6 +2,7 @@ package it.si2001.service;
 
 import it.si2001.dao.EmployeeDaoImpl;
 import it.si2001.model.Employee;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +13,10 @@ import java.util.List;
 public class EmployeServiceImpl implements EmployeeService
 {
 
-    private final EmployeeDaoImpl dao;
+    final
+    EmployeeDaoImpl dao;
 
+    @Autowired
     public EmployeServiceImpl(EmployeeDaoImpl dao)
     {
         this.dao = dao;
@@ -22,6 +25,11 @@ public class EmployeServiceImpl implements EmployeeService
     public Employee findById(int id)
     {
         return dao.findById(id);
+    }
+
+    public Employee findByUsername(String username)
+    {
+        return dao.findByUsername(username);
     }
 
     public void saveEmployee(Employee employee)

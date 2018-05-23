@@ -29,6 +29,6 @@
     <tiles:insertAttribute name="body" />
 </section>
 
-</footer>
+<tiles:insertAttribute name="notification" />
 </body>
 </html>

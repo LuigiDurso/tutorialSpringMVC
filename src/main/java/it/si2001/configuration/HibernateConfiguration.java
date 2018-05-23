@@ -20,13 +20,15 @@ import java.util.Properties;
 public class HibernateConfiguration
 {
 
-    private final Environment environment;
+    final
+    Environment environment;
 
     @Autowired
     public HibernateConfiguration(Environment environment)
     {
         this.environment = environment;
     }
+
 
     @Bean
     public LocalSessionFactoryBean sessionFactory()

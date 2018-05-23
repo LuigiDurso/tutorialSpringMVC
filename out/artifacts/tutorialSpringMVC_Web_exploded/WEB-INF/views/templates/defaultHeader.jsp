@@ -1,4 +1,5 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: SI2001
@@ -14,10 +15,21 @@
         </div>
         <ul class="nav navbar-nav">
             <li class="active"><a href="/">Home</a></li>
-            <c:url value="/newEmployee" var = "addEmployee">
-                <c:param name = "id" value = "-1"/>
-            </c:url>
-            <li class="active"><a href="${addEmployee}">New Employee</a></li>
+            <sec:authorize access="hasRole('ADMIN')">
+                <c:url value="/newEmployee" var = "addEmployee"></c:url>
+                <li class="active"><a href="${addEmployee}">New Employee</a></li>
+            </sec:authorize>
         </ul>
+        <c:if test="${not empty loggedIN}">
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    Welcome <c:out value="${loggedIN}"></c:out>
+                </li>
+                <li>
+                    <c:url value="/logout" var = "logout"></c:url>
+                    <a href="${logout}"><span class="glyphicon glyphicon-user"></span>Logout</a>
+                </li>
+            </ul>
+        </c:if>
     </div>
 </nav>

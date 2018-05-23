@@ -6,6 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script src="/static/script/deleteConfirm.js" ></script>
 <script src="/static/script/alertScript.js" ></script>
@@ -33,13 +34,26 @@
                         </c:forEach>
                     </td>
                     <td>
-                        <c:url value="" var = "editURL">
-                            <c:param name = "id" value = "${employee.id}"/>
-                        </c:url>
-                        <a href="${editURL}" class="btn btn-default">Edit</a>
-                        <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
-                        <!-- Trigger the modal with a button -->
-                        <button type="button" class="btn btn-danger deleteBtn" value="${delURL}">Delete</button>
+                        <sec:authorize access="hasRole('USER')">
+                            <c:if test="${loggedIN == employee.username}">
+                                <c:url value="" var = "editURL">
+                                    <c:param name = "id" value = "${employee.id}"/>
+                                </c:url>
+                                <a href="${editURL}" class="btn btn-default">Edit</a>
+                            </c:if>
+                        </sec:authorize>
+
+                        <sec:authorize access="hasRole('ADMIN')">
+                            <c:url value="" var = "editURL">
+                                <c:param name = "id" value = "${employee.id}"/>
+                            </c:url>
+                            <a href="${editURL}" class="btn btn-default">Edit</a>
+                            <!-- Trigger the modal with a button -->
+                            <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
+                            <button type="button" class="btn btn-danger deleteBtn" value="${delURL}">Delete</button>
+                        </sec:authorize>
+
+
                     </td>
                 </tr>
             </c:forEach>
@@ -47,15 +61,6 @@
         </table>
     </div>
 </div>
-
-<c:if test="${not empty notifications}" >
-    <c:forEach items="${notifications}" var="n">
-        <div class="alert ${n.type} alert-dismissible">
-            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong><c:out value="${n.description}"/>!</strong>
-        </div>
-    </c:forEach>
-</c:if>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" role="dialog">
