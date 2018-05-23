@@ -22,7 +22,7 @@
                 <li class="active"><a href="${addEmployee}">New Employee</a></li>
             </sec:authorize>
         </ul>
-        <c:if test="${not empty loggedIN}">
+        <c:if test="${not empty loggedIN }">
             <ul class="nav navbar-nav navbar-right">
                 <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
@@ -32,9 +32,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <c:url value="" var = "editURL">
-                                <c:param name = "username" value = "${loggedIN}"/>
-                            </c:url>
+                            <c:url value="/edit/${loggedIN}" var = "editURL"></c:url>
                             <a href="${editURL}" class="btn btn-default">Edit you profile</a>
                         </li>
                     </ul>

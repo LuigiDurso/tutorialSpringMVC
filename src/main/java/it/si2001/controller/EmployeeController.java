@@ -71,9 +71,6 @@ public class EmployeeController
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String homePage(ModelMap model)
     {
-        List<Employee> employees=employeeService.findAllEmployees();
-        model.addAttribute("employees",employees);
-        model.addAttribute("loggedIN",getPrincipal());
         return "index";
     }
 
@@ -82,8 +79,9 @@ public class EmployeeController
     {
         Employee e=new Employee();
         model.addAttribute("employee",e);
-        model.addAttribute("loggedIN",getPrincipal());
+
         model.addAttribute("edit",false);
+
         return "registration";
     }
 
@@ -91,7 +89,6 @@ public class EmployeeController
     public String saveNewEmployee (@Valid Employee employee, BindingResult result, ModelMap model)
     {
         List<Notification> notifications=new ArrayList<Notification>();
-        model.addAttribute("loggedIN",getPrincipal());
 
         if (result.hasErrors())
         {
@@ -110,9 +107,16 @@ public class EmployeeController
 
         employeeService.saveEmployee(employee);
 
-        //model.addAttribute("loggedIN", getPrincipal());
         notifications.add(new Notification("alert-success","Utente inserito!"));
         model.addAttribute("notifications",notifications);
+        return "registration";
+    }
+
+    @RequestMapping(value = "/edit/{username}", method =  RequestMethod.GET)
+    public String editUser(@PathVariable String username, ModelMap model)
+    {
+        Employee e=employeeService.findByUsername(username);
+        model.addAttribute("employee",e);
         return "registration";
     }
 
@@ -120,29 +124,19 @@ public class EmployeeController
     public String deleteEmployee(@PathVariable int id, ModelMap model)
     {
         List<Notification> notifications=new ArrayList<Notification>();
-        List<Employee> employees;
 
         Employee e=employeeService.findById(id);
         if (e==null)
         {
             notifications.add(new Notification("alert-danger","Utente non trovato"));
             model.addAttribute("notifications",notifications);
-            employees=employeeService.findAllEmployees();
-            model.addAttribute("employees",employees);
-            model.addAttribute("loggedIN",getPrincipal());
             return "index";
         }
         employeeService.deleteEmployeeById(id);
 
-        employees=employeeService.findAllEmployees();
-        model.addAttribute("employees",employees);
-
-        model.addAttribute("loggedIN",getPrincipal());
-
-
         notifications.add(new Notification("alert-success","Utente eliminato con successo"));
         model.addAttribute("notifications",notifications);
-
+        model.addAttribute("employees",getEmployees());
         return "index";
     }
 
@@ -152,7 +146,6 @@ public class EmployeeController
     @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
     public String accessDeniedPage(ModelMap model)
     {
-        model.addAttribute("loggedinuser", getPrincipal());
         return "accessDenied";
     }
 
@@ -230,6 +223,22 @@ public class EmployeeController
     public List<MaritalStatus> initializeMaritalStatus()
     {
         return maritalStatusService.findAllStatus();
+    }
+
+    @ModelAttribute("loggedIN")
+    public String getLoggedIN()
+    {
+        if (isCurrentAuthenticationAnonymous())
+        {
+            return null;
+        }
+        return getPrincipal();
+    }
+
+    @ModelAttribute("employees")
+    public List<Employee> getEmployees()
+    {
+        return employeeService.findAllEmployees();
     }
 
 }

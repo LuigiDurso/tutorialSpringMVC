@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Model che rappresenta degli impiegati
@@ -47,11 +48,11 @@ public class Employee implements Serializable
     private List<Skill> skills;
 
     @NotEmpty
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_profile_joinTable",
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_profile_id") })
-    private List<UserProfile> userProfiles;
+    private Set<UserProfile> userProfiles;
 
     public Employee()
     {
@@ -73,11 +74,11 @@ public class Employee implements Serializable
         id = id;
     }
 
-    public List<UserProfile> getUserProfiles() {
+    public Set<UserProfile> getUserProfiles() {
         return userProfiles;
     }
 
-    public void setUserProfiles(List<UserProfile> userProfiles) {
+    public void setUserProfiles(Set<UserProfile> userProfiles) {
         this.userProfiles = userProfiles;
     }
 

@@ -36,9 +36,7 @@
                     </td>
                     <sec:authorize access="hasRole('ADMIN')">
                         <td>
-                            <c:url value="" var = "editURL">
-                                <c:param name = "username" value = "${employee.username}"/>
-                            </c:url>
+                            <c:url value="/edit/${employee.username}" var = "editURL"></c:url>
                             <a href="${editURL}" class="btn btn-default">Edit</a>
                             <!-- Trigger the modal with a button -->
                             <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
