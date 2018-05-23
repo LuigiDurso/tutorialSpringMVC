@@ -58,4 +58,10 @@ public class EmployeServiceImpl implements EmployeeService
     {
         return dao.findAllEmployees();
     }
+
+    public boolean isUsernameUnique(int id, String username)
+    {
+        Employee user = findByUsername(username);
+        return ( user == null || ((id != 0) && (user.getId() == id)));
+    }
 }

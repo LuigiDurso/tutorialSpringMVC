@@ -11,7 +11,7 @@
 
 <div class="generic-container">
     <div class="well lead">User Registration Form</div>
-    <form:form method="POST" modelAttribute="employee" class="form-horizontal">
+    <form:form  method="POST" modelAttribute="employee" class="form-horizontal">
         <form:input type="hidden" path="id" id="id"/>
 
         <div class="row">
@@ -40,6 +40,68 @@
 
         <div class="row">
             <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="birthDate">BirthDate</label>
+                <div class="col-md-7">
+                    <form:input type="date" path="birthDate" id="birthDate" class="form-control input-sm" />
+                    <div class="has-error">
+                        <form:errors path="birthDate" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="country">Country</label>
+                <div class="col-md-7">
+                    <form:input type="text" path="country" id="country" class="form-control input-sm" />
+                    <div class="has-error">
+                        <form:errors path="country" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="username">Username</label>
+                <div class="col-md-7">
+                    <form:input type="text" path="username" id="username" class="form-control input-sm" />
+                    <div class="has-error">
+                        <form:errors path="username" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="password">Password</label>
+                <div class="col-md-7">
+                    <form:input type="password" path="password" id="password" class="form-control input-sm" />
+                    <div class="has-error">
+                        <form:errors path="password" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="maritalStatus">Marital Status</label>
+                <div class="col-md-7">
+                    <form:select path="maritalStatus" class="form-control input-sm">
+                        <form:options items="${maritalStatues}" itemValue="statoCivile" itemLabel="statoCivile"/>
+                    </form:select>
+                    <div class="has-error">
+                        <form:errors path="${maritalStatus}" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
                 <label class="col-md-3 control-lable" for="skills">Skills</label>
                 <div class="col-md-7">
                     <form:select multiple="true" path="skills" class="form-control input-sm">
@@ -47,6 +109,20 @@
                     </form:select>
                     <div class="has-error">
                         <form:errors path="skills" class="help-inline"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="userProfiles">Role</label>
+                <div class="col-md-7">
+                    <form:select multiple="true" path="userProfiles" class="form-control input-sm">
+                        <form:options items="${roles}" itemValue="type" itemLabel="type"/>
+                    </form:select>
+                    <div class="has-error">
+                        <form:errors path="userProfiles" class="help-inline"/>
                     </div>
                 </div>
             </div>

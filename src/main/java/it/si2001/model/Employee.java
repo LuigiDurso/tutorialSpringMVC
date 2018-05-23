@@ -35,8 +35,8 @@ public class Employee implements Serializable
     @NotEmpty
     @Column(name = "BirthDate")
     private String birthDate;
-    @ManyToOne()
-    @JoinColumn(name="MaritalStatus", nullable=false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="MaritalStatus")
     private MaritalStatus maritalStatus;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

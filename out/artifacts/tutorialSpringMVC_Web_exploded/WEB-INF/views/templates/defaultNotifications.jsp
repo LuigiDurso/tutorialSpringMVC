@@ -8,6 +8,8 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
+<script src="/static/script/alertScript.js" ></script>
+
 <c:if test="${not empty notifications}" >
     <c:forEach items="${notifications}" var="n">
         <div class="alert ${n.type} alert-dismissible">

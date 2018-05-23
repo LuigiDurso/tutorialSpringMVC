@@ -19,4 +19,5 @@ public interface EmployeeService
 
     List<Employee> findAllEmployees();
 
+    boolean isUsernameUnique(int id, String username);
 }

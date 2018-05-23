@@ -9,7 +9,6 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script src="/static/script/deleteConfirm.js" ></script>
-<script src="/static/script/alertScript.js" ></script>
 
 <div class="panel panel-default">
     <div class="panel-body">
@@ -20,7 +19,9 @@
                 <th>Country</th>
                 <th>Marital Status</th>
                 <th>Skills</th>
-                <th>Edit</th>
+                <sec:authorize access="hasRole('ADMIN')">
+                    <th>Edit</th>
+                </sec:authorize>
             </tr>
             <c:forEach items="${employees}" var="employee">
                 <tr>
@@ -33,28 +34,18 @@
                             <c:out value="${sk.skill}"/>
                         </c:forEach>
                     </td>
-                    <td>
-                        <sec:authorize access="hasRole('USER')">
-                            <c:if test="${loggedIN == employee.username}">
-                                <c:url value="" var = "editURL">
-                                    <c:param name = "id" value = "${employee.id}"/>
-                                </c:url>
-                                <a href="${editURL}" class="btn btn-default">Edit</a>
-                            </c:if>
-                        </sec:authorize>
-
-                        <sec:authorize access="hasRole('ADMIN')">
+                    <sec:authorize access="hasRole('ADMIN')">
+                        <td>
                             <c:url value="" var = "editURL">
-                                <c:param name = "id" value = "${employee.id}"/>
+                                <c:param name = "username" value = "${employee.username}"/>
                             </c:url>
                             <a href="${editURL}" class="btn btn-default">Edit</a>
                             <!-- Trigger the modal with a button -->
                             <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
                             <button type="button" class="btn btn-danger deleteBtn" value="${delURL}">Delete</button>
-                        </sec:authorize>
+                        </td>
+                    </sec:authorize>
 
-
-                    </td>
                 </tr>
             </c:forEach>
 

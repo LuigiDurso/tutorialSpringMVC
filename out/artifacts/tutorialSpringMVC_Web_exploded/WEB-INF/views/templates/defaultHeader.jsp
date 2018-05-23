@@ -8,6 +8,8 @@
   To change this template use File | Settings | File Templates.
 --%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+
+
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
@@ -22,12 +24,24 @@
         </ul>
         <c:if test="${not empty loggedIN}">
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    Welcome <c:out value="${loggedIN}"></c:out>
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <span class="glyphicon glyphicon-user"></span>
+                        Welcome <c:out value="${loggedIN}"></c:out>
+                    <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <c:url value="" var = "editURL">
+                                <c:param name = "username" value = "${loggedIN}"/>
+                            </c:url>
+                            <a href="${editURL}" class="btn btn-default">Edit you profile</a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <c:url value="/logout" var = "logout"></c:url>
-                    <a href="${logout}"><span class="glyphicon glyphicon-user"></span>Logout</a>
+                    <a href="${logout}"><span class="glyphicon glyphicon-log-out"></span>Logout</a>
                 </li>
             </ul>
         </c:if>

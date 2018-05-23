@@ -1,9 +1,11 @@
 package it.si2001.controller;
 
 import it.si2001.model.Employee;
+import it.si2001.model.MaritalStatus;
 import it.si2001.model.Skill;
 import it.si2001.model.UserProfile;
 import it.si2001.service.EmployeeService;
+import it.si2001.service.MaritalStatusService;
 import it.si2001.service.SkillService;
 import it.si2001.service.UserProfileService;
 import it.si2001.utils.Notification;
@@ -16,15 +18,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class EmployeeController
@@ -35,6 +38,9 @@ public class EmployeeController
 
     final
     SkillService skillService;
+
+    final
+    MaritalStatusService maritalStatusService;
 
     final
     UserProfileService userProfileService;
@@ -49,11 +55,12 @@ public class EmployeeController
     AuthenticationTrustResolver authenticationTrustResolver;
 
     @Autowired
-    public EmployeeController(EmployeeService employeeService, SkillService skillService, MessageSource messageSource, PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices, AuthenticationTrustResolver authenticationTrustResolver, UserProfileService userProfileService)
+    public EmployeeController(EmployeeService employeeService, SkillService skillService, MaritalStatusService maritalStatusService, MessageSource messageSource, PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices, AuthenticationTrustResolver authenticationTrustResolver, UserProfileService userProfileService)
     {
 
         this.employeeService = employeeService;
         this.skillService = skillService;
+        this.maritalStatusService = maritalStatusService;
         this.messageSource = messageSource;
         this.persistentTokenBasedRememberMeServices = persistentTokenBasedRememberMeServices;
         this.authenticationTrustResolver = authenticationTrustResolver;
@@ -75,27 +82,64 @@ public class EmployeeController
     {
         Employee e=new Employee();
         model.addAttribute("employee",e);
-
+        model.addAttribute("loggedIN",getPrincipal());
         model.addAttribute("edit",false);
         return "registration";
     }
 
     @RequestMapping(value = "/newEmployee", method = RequestMethod.POST)
-    public String saveNewEmployee (ModelMap model)
+    public String saveNewEmployee (@Valid Employee employee, BindingResult result, ModelMap model)
     {
-        
+        List<Notification> notifications=new ArrayList<Notification>();
+        model.addAttribute("loggedIN",getPrincipal());
+
+        if (result.hasErrors())
+        {
+            notifications.add(new Notification("alert-danger","Utente non inserito!"));
+            model.addAttribute("notifications",notifications);
+            return "registration";
+        }
+
+        if(!employeeService.isUsernameUnique(employee.getId(), employee.getUsername()))
+        {
+            FieldError ssoError =new FieldError("employee","username",
+                    messageSource.getMessage("non.unique.username", new String[]{employee.getUsername()}, Locale.getDefault()));
+            result.addError(ssoError);
+            return "registration";
+        }
+
+        employeeService.saveEmployee(employee);
+
+        //model.addAttribute("loggedIN", getPrincipal());
+        notifications.add(new Notification("alert-success","Utente inserito!"));
+        model.addAttribute("notifications",notifications);
         return "registration";
     }
 
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String deleteEmployee(@PathVariable int id, ModelMap model)
     {
+        List<Notification> notifications=new ArrayList<Notification>();
+        List<Employee> employees;
+
+        Employee e=employeeService.findById(id);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            employees=employeeService.findAllEmployees();
+            model.addAttribute("employees",employees);
+            model.addAttribute("loggedIN",getPrincipal());
+            return "index";
+        }
         employeeService.deleteEmployeeById(id);
 
-        List<Employee> employees=employeeService.findAllEmployees();
+        employees=employeeService.findAllEmployees();
         model.addAttribute("employees",employees);
 
-        List<Notification> notifications=new ArrayList<Notification>();
+        model.addAttribute("loggedIN",getPrincipal());
+
+
         notifications.add(new Notification("alert-success","Utente eliminato con successo"));
         model.addAttribute("notifications",notifications);
 
@@ -180,6 +224,12 @@ public class EmployeeController
     public List<Skill> initializeSkills()
     {
         return skillService.findAllSkills();
+    }
+
+    @ModelAttribute("maritalStatues")
+    public List<MaritalStatus> initializeMaritalStatus()
+    {
+        return maritalStatusService.findAllStatus();
     }
 
 }
