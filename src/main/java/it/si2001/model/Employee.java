@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -39,13 +38,15 @@ public class Employee implements Serializable
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="MaritalStatus")
     private MaritalStatus maritalStatus;
+
+    @NotEmpty
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "Employee_Skills",
             joinColumns = { @JoinColumn(name = "idemployee") },
             inverseJoinColumns = { @JoinColumn(name = "idSkills") }
     )
-    private List<Skill> skills;
+    private Set<Skill> skillList;
 
     @NotEmpty
     @ManyToMany(fetch = FetchType.EAGER)
@@ -71,7 +72,7 @@ public class Employee implements Serializable
     }
 
     public void setId(int id) {
-        id = id;
+        this.id = id;
     }
 
     public Set<UserProfile> getUserProfiles() {
@@ -138,11 +139,11 @@ public class Employee implements Serializable
         this.maritalStatus = maritalStatus;
     }
 
-    public List<Skill> getSkills() {
-        return skills;
+    public Set<Skill> getSkillList() {
+        return skillList;
     }
 
-    public void setSkills(List<Skill> skills) {
-        this.skills = skills;
+    public void setSkillList(Set<Skill> skillList) {
+        this.skillList = skillList;
     }
 }

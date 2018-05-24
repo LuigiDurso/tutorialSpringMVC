@@ -2,11 +2,14 @@ package it.si2001.service;
 
 import it.si2001.dao.EmployeeDaoImpl;
 import it.si2001.model.Employee;
+import it.si2001.model.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service("employeeService")
 @Transactional
@@ -45,7 +48,19 @@ public class EmployeServiceImpl implements EmployeeService
         {
             emp.setName(employee.getName());
             emp.setSurname(employee.getSurname());
+            emp.setBirthDate(employee.getBirthDate());
+            emp.setMaritalStatus(employee.getMaritalStatus());
+            if (employee.getUserProfiles()!=null)
+            {
+                emp.setUserProfiles(employee.getUserProfiles());
+            }
+            if (employee.getSkillList()!=null)
+            {
+                emp.setSkillList(employee.getSkillList());
+            }
             emp.setCountry(employee.getCountry());
+            emp.setPassword(employee.getPassword());
+            emp.setUsername(employee.getUsername());
         }
     }
 

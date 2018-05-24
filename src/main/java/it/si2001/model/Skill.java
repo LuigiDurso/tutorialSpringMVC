@@ -11,9 +11,9 @@ public class Skill
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idSkills")
     private int id;
-    @Column(name = "Skill")
+    @Column(name = "SKILL")
     private String skill;
-    @ManyToMany(mappedBy = "skills")
+    @ManyToMany(mappedBy = "skillList")
     List<Employee> employees;
 
     public Skill()

@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -115,8 +116,66 @@ public class EmployeeController
     @RequestMapping(value = "/edit/{username}", method =  RequestMethod.GET)
     public String editUser(@PathVariable String username, ModelMap model)
     {
+        List<Notification> notifications=new ArrayList<Notification>();
+
         Employee e=employeeService.findByUsername(username);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            return "index";
+        }
+
+        model.addAttribute("roles",e.getUserProfiles());
+
         model.addAttribute("employee",e);
+        model.addAttribute("edit",true);
+        return "registration";
+    }
+
+    @RequestMapping(value = "/edit/{username}", method =  RequestMethod.POST)
+    public String updateEmployee(@Valid Employee employee, BindingResult result, @PathVariable String username, ModelMap model)
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+
+        Employee e=employeeService.findByUsername(username);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        if (result.hasErrors())
+        {
+            notifications.add(new Notification("alert-danger","Utente non modificato!"));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        if(!employeeService.isUsernameUnique(employee.getId(), employee.getUsername()))
+        {
+            FieldError ssoError =new FieldError("employee","username",
+                    messageSource.getMessage("non.unique.username", new String[]{employee.getUsername()}, Locale.getDefault()));
+            result.addError(ssoError);
+            notifications.add(new Notification("alert-danger","Utente non modificato!"));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        employeeService.updateEmployee(employee);
+
+        notifications.add(new Notification("alert-success","Utente modificato!"));
+        model.addAttribute("edit",true);
+        model.addAttribute("notifications",notifications);
+        model.addAttribute("roles",e.getUserProfiles());
         return "registration";
     }
 
@@ -195,6 +254,11 @@ public class EmployeeController
             userName = principal.toString();
         }
         return userName;
+    }
+
+    public boolean check(Authentication authentication, String username)
+    {
+        return this.getPrincipal().equals(username);
     }
 
 

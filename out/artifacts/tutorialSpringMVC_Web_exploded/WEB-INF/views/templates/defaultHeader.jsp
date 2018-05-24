@@ -32,7 +32,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <c:url value="/edit/${loggetIN}" var = "editURL"></c:url>
+                            <c:url value="/edit/${loggedIN}" var = "editURL"></c:url>
                             <a href="${editURL}" class="btn btn-default">Edit you profile</a>
                         </li>
                     </ul>

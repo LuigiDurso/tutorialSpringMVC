@@ -9,45 +9,51 @@
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
 <script src="/static/script/deleteConfirm.js" ></script>
+<script src="/static/script/tableFilter.js" ></script>
 
 <div class="panel panel-default">
     <div class="panel-body">
-        <table class="table table-striped">
-            <tr>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Country</th>
-                <th>Marital Status</th>
-                <th>Skills</th>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <th>Edit</th>
-                </sec:authorize>
-            </tr>
-            <c:forEach items="${employees}" var="employee">
+        <input class="form-control" id="myFilter" type="text" placeholder="Search..">
+        <br>
+        <div class="table-responsive ">
+            <table class="table table-striped " >
                 <tr>
-                    <td><c:out value="${employee.name}"/></td>
-                    <td><c:out value="${employee.surname}"/></td>
-                    <td><c:out value="${employee.country}"/></td>
-                    <td><c:out value="${employee.maritalStatus.statoCivile}"/></td>
-                    <td>
-                        <c:forEach items="${employee.skills}" var="sk">
-                            <c:out value="${sk.skill}"/>
-                        </c:forEach>
-                    </td>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Country</th>
+                    <th>Marital Status</th>
+                    <th>Skills</th>
                     <sec:authorize access="hasRole('ADMIN')">
-                        <td>
-                            <c:url value="/edit/${employee.username}" var = "editURL"></c:url>
-                            <a href="${editURL}" class="btn btn-default">Edit</a>
-                            <!-- Trigger the modal with a button -->
-                            <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
-                            <button type="button" class="btn btn-danger deleteBtn" value="${delURL}">Delete</button>
-                        </td>
+                        <th>Edit</th>
                     </sec:authorize>
-
                 </tr>
-            </c:forEach>
+                <tbody id="employeesTable">
+                <c:forEach items="${employees}" var="employee">
+                    <tr>
+                        <td><c:out value="${employee.name}"/></td>
+                        <td><c:out value="${employee.surname}"/></td>
+                        <td><c:out value="${employee.country}"/></td>
+                        <td><c:out value="${employee.maritalStatus.statoCivile}"/></td>
+                        <td>
+                            <c:forEach items="${employee.skillList}" var="sk">
+                                <c:out value="${sk.skill}"/>
+                            </c:forEach>
+                        </td>
+                        <sec:authorize access="hasRole('ADMIN')">
+                            <td>
+                                <c:url value="/edit/${employee.username}" var = "editURL"></c:url>
+                                <a href="${editURL}" class="btn btn-default">Edit</a>
+                                <!-- Trigger the modal with a button -->
+                                <c:url value="/delete/${employee.id}" var = "delURL"> </c:url>
+                                <button type="button" class="btn btn-danger deleteBtn" value="${delURL}">Delete</button>
+                            </td>
+                        </sec:authorize>
 
-        </table>
+                    </tr>
+                </c:forEach>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
