@@ -105,8 +105,8 @@
             <div class="form-group col-md-12">
                 <label class="col-md-3 control-lable" for="skillList">Skills</label>
                 <div class="col-md-7">
-                    <form:select multiple="true" path="employee.skillList" class="form-control input-sm">
-                        <form:options items="${skills}" itemValue="skill" itemLabel="id"/>
+                    <form:select multiple="true" path="skillList" class="form-control input-sm">
+                        <form:options items="${skills}" itemValue="skill" itemLabel="skill"/>
                     </form:select>
                     <div class="has-error">
                         <form:errors path="skillList" class="help-inline"/>
