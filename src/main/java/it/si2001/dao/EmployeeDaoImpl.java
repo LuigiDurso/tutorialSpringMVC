@@ -1,11 +1,9 @@
 package it.si2001.dao;
 
 import it.si2001.model.Employee;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Repository("employeeDao")
@@ -18,9 +16,18 @@ public class EmployeeDaoImpl extends AbstractDao<Integer,Employee> implements Em
 
     public Employee findByUsername(String name)
     {
-        Criteria cr=createEntityCriteria();
-        cr.add(Restrictions.eq("username",name));
-        return (Employee) cr.uniqueResult();
+        try
+        {
+            Employee employee = (Employee) getEntityManager()
+                    .createQuery("SELECT e FROM Employee e WHERE e.username LIKE :username")
+                    .setParameter("username", name)
+                    .getSingleResult();
+
+            return employee;
+        }catch(NoResultException ex)
+        {
+            return null;
+        }
     }
 
     public void saveEmployee(Employee employee)
@@ -30,16 +37,18 @@ public class EmployeeDaoImpl extends AbstractDao<Integer,Employee> implements Em
 
     public void deleteEmployeeById(int id)
     {
-        Query query = getSession().createQuery("delete from Employee e where e.id = :id");
-        query.setInteger("id",id);
-        query.executeUpdate();
+        Employee employee = (Employee) getEntityManager()
+                .createQuery("SELECT e FROM Employee e WHERE e.id LIKE :id")
+                .setParameter("id", id)
+                .getSingleResult();
+        delete(employee);
     }
 
     @SuppressWarnings("unchecked")
     public List<Employee> findAllEmployees()
     {
-        Criteria criteria = createEntityCriteria();
-        criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-        return (List<Employee>) criteria.list();
+        return getEntityManager()
+                .createQuery("SELECT e FROM Employee e")
+                .getResultList();
     }
 }

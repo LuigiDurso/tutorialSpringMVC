@@ -12,6 +12,8 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
+
 @Repository("tokenRepositoryDao")
 @Transactional
 public class HibernateTokenRepositoryImpl extends AbstractDao<String, PersistentLogin>
@@ -36,9 +38,10 @@ public class HibernateTokenRepositoryImpl extends AbstractDao<String, Persistent
     {
         logger.info("Fetch Token if any for seriesId : {}", seriesId);
         try {
-            Criteria crit = createEntityCriteria();
-            crit.add(Restrictions.eq("series", seriesId));
-            PersistentLogin persistentLogin = (PersistentLogin) crit.uniqueResult();
+            PersistentLogin persistentLogin= (PersistentLogin) getEntityManager()
+                    .createQuery("SELECT p FROM PersistentLogin p WHERE p.series LIKE :seriesId")
+                    .setParameter("seriesId",seriesId)
+                    .getSingleResult();
 
             return new PersistentRememberMeToken(persistentLogin.getUsername(), persistentLogin.getSeries(),
                     persistentLogin.getToken(), persistentLogin.getLast_used());
@@ -51,11 +54,21 @@ public class HibernateTokenRepositoryImpl extends AbstractDao<String, Persistent
 
     public void removeUserTokens(String username)
     {
+        PersistentLogin persistentLogin=null;
         logger.info("Removing Token if any for user : {}", username);
-        Criteria crit = createEntityCriteria();
-        crit.add(Restrictions.eq("username", username));
-        PersistentLogin persistentLogin = (PersistentLogin) crit.uniqueResult();
-        if (persistentLogin != null)
+        try
+        {
+            persistentLogin = (PersistentLogin) getEntityManager()
+                    .createQuery("SELECT p FROM PersistentLogin p WHERE p.username LIKE :username")
+                    .setParameter("username", username)
+                    .getSingleResult();
+        }
+        catch (NoResultException noR)
+        {
+
+        }
+
+        if (persistentLogin!=null)
         {
             logger.info("rememberMe was selected");
             delete(persistentLogin);

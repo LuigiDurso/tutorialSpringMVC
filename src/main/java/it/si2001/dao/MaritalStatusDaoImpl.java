@@ -5,6 +5,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Repository("MaritalStatusDao")
@@ -17,15 +18,27 @@ public class MaritalStatusDaoImpl extends AbstractDao<Integer,MaritalStatus> imp
 
     public MaritalStatus findByName(String name)
     {
-        Criteria criteria=this.createEntityCriteria();
-        criteria.add(Restrictions.eq("statoCivile",name));
-        return (MaritalStatus) criteria.uniqueResult();
+        try
+        {
+            MaritalStatus maritalStatus = (MaritalStatus) getEntityManager()
+                    .createQuery("SELECT m FROM MaritalStatus m WHERE m.statoCivile LIKE :statoCivile")
+                    .setParameter("statoCivile", name)
+                    .getSingleResult();
+
+            return maritalStatus;
+
+        }
+        catch(NoResultException ex)
+        {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public List<MaritalStatus> findAllStatus()
     {
-        Criteria criteria=this.createEntityCriteria();
-        return (List<MaritalStatus>) criteria.list();
+        return getEntityManager()
+                .createQuery("SELECT m FROM MaritalStatus m")
+                .getResultList();
     }
 }

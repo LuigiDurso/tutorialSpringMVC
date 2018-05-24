@@ -9,6 +9,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 public abstract class AbstractDao<PK extends Serializable, T>
 {
 
@@ -21,37 +24,33 @@ public abstract class AbstractDao<PK extends Serializable, T>
                                                                                 .getActualTypeArguments()[1];
     }
 
-    @Autowired
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    EntityManager entityManager;
 
-    protected Session getSession()
+    protected EntityManager getEntityManager()
     {
-        return sessionFactory.getCurrentSession();
+        return this.entityManager;
     }
 
     @SuppressWarnings("unchecked")
     public T getByKey(PK key)
     {
-        return (T) getSession().get(persistentClass, key);
+        return (T) entityManager.find(persistentClass, key);
     }
 
     public void persist(T entity)
     {
-        getSession().persist(entity);
+        entityManager.persist(entity);
     }
 
-    public void update(T entity) {
-        getSession().update(entity);
+    public void update(T entity)
+    {
+        entityManager.merge(entity);
     }
 
     public void delete(T entity)
     {
-        getSession().delete(entity);
-    }
-
-    protected Criteria createEntityCriteria()
-    {
-        return getSession().createCriteria(persistentClass);
+        entityManager.remove(entity);
     }
 
 }

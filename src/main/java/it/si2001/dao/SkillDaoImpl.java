@@ -5,6 +5,7 @@ import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 
 @Repository("SkillDao")
@@ -17,14 +18,27 @@ public class SkillDaoImpl extends AbstractDao<Integer,Skill> implements SkillDao
 
     public Skill findByName(String name)
     {
-        Criteria criteria=this.createEntityCriteria();
-        criteria.add(Restrictions.eq("skill",name));
-        return (Skill) criteria.uniqueResult();
+        try
+        {
+            Skill skill = (Skill) getEntityManager()
+                    .createQuery("SELECT s FROM Skill s WHERE s.skill LIKE :skill")
+                    .setParameter("skill", name)
+                    .getSingleResult();
+
+            return skill;
+
+        }
+        catch(NoResultException ex)
+        {
+            return null;
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public List<Skill> findAllSkills()
     {
-        Criteria criteria=this.createEntityCriteria();
-        return (List<Skill>) criteria.list();
+        return getEntityManager()
+                .createQuery("SELECT s FROM Skill s")
+                .getResultList();
     }
 }
