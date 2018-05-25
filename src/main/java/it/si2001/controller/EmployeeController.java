@@ -1,15 +1,36 @@
 package it.si2001.controller;
 
 import it.si2001.model.Employee;
+import it.si2001.model.MaritalStatus;
+import it.si2001.model.Skill;
+import it.si2001.model.UserProfile;
 import it.si2001.service.EmployeeService;
+import it.si2001.service.MaritalStatusService;
+import it.si2001.service.SkillService;
+import it.si2001.service.UserProfileService;
+import it.si2001.utils.Notification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.security.authentication.AuthenticationTrustResolver;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class EmployeeController
@@ -19,21 +40,303 @@ public class EmployeeController
     EmployeeService employeeService;
 
     final
+    SkillService skillService;
+
+    final
+    MaritalStatusService maritalStatusService;
+
+    final
+    UserProfileService userProfileService;
+
+    final
     MessageSource messageSource;
 
-    public EmployeeController(EmployeeService employeeService, MessageSource messageSource)
+    final
+    PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices;
+
+    final
+    AuthenticationTrustResolver authenticationTrustResolver;
+
+    @Autowired
+    public EmployeeController(EmployeeService employeeService, SkillService skillService, MaritalStatusService maritalStatusService, MessageSource messageSource, PersistentTokenBasedRememberMeServices persistentTokenBasedRememberMeServices, AuthenticationTrustResolver authenticationTrustResolver, UserProfileService userProfileService)
     {
+
         this.employeeService = employeeService;
+        this.skillService = skillService;
+        this.maritalStatusService = maritalStatusService;
         this.messageSource = messageSource;
+        this.persistentTokenBasedRememberMeServices = persistentTokenBasedRememberMeServices;
+        this.authenticationTrustResolver = authenticationTrustResolver;
+        this.userProfileService = userProfileService;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder)
+    {
+        binder.setDisallowedFields("photo");
     }
 
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String homePage(ModelMap model)
     {
-        List<Employee> employees=employeeService.findAllEmployees();
-        model.addAttribute("employees",employees);
         return "index";
+    }
+
+    @RequestMapping(value = "/newEmployee", method = RequestMethod.GET)
+    public String newEmployee (ModelMap model)
+    {
+        Employee e=new Employee();
+        model.addAttribute("employee",e);
+
+        model.addAttribute("edit",false);
+
+        return "registration";
+    }
+
+    @RequestMapping(value = "/newEmployee", method = RequestMethod.POST)
+    public String saveNewEmployee (@Valid Employee employee, BindingResult result, ModelMap model,
+                                                                                @RequestParam MultipartFile photo)
+                                                                                                    throws IOException
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+        if (result.hasErrors())
+        {
+            notifications.add(new Notification("alert-danger","Utente non inserito!"));
+            model.addAttribute("notifications",notifications);
+            return "registration";
+        }
+
+        if(!employeeService.isUsernameUnique(employee.getId(), employee.getUsername()))
+        {
+            FieldError ssoError =new FieldError("employee","username",
+                    messageSource.getMessage("non.unique.username", new String[]{employee.getUsername()}, Locale.getDefault()));
+            result.addError(ssoError);
+            notifications.add(new Notification("alert-danger","Utente non inserito!"));
+            model.addAttribute("notifications",notifications);
+            return "registration";
+        }
+
+        if (photo!=null)
+        {
+            employee.setPhoto(photo.getBytes());
+        }
+
+        employeeService.saveEmployee(employee);
+
+        notifications.add(new Notification("alert-success","Utente inserito!"));
+        model.addAttribute("notifications",notifications);
+        return "registration";
+    }
+
+    @RequestMapping(value = "/edit/{username}", method =  RequestMethod.GET)
+    public String editUser(@PathVariable String username, ModelMap model)
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+        Employee e=employeeService.findByUsername(username);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            return "index";
+        }
+
+        model.addAttribute("roles",e.getUserProfiles());
+
+        model.addAttribute("employee",e);
+        model.addAttribute("edit",true);
+        return "registration";
+    }
+
+    @RequestMapping(value = "/getImage/{username}")
+    public void getImage(@PathVariable String username, ModelMap model, HttpServletResponse response) throws IOException
+    {
+        Employee e=employeeService.findByUsername(username);
+        response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+        response.getOutputStream().write(e.getPhoto());
+
+
+        response.getOutputStream().close();
+    }
+
+    @RequestMapping(value = "/edit/{username}", method =  RequestMethod.POST)
+    public String updateEmployee(@Valid Employee employee, BindingResult result,
+                                            @PathVariable String username, ModelMap model,
+                                                                @RequestParam MultipartFile photo) throws IOException
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+
+        Employee e=employeeService.findByUsername(username);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        if (result.hasErrors())
+        {
+            notifications.add(new Notification("alert-danger","Utente non modificato!"+result.getAllErrors()));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        if(!employeeService.isUsernameUnique(employee.getId(), employee.getUsername()))
+        {
+            FieldError ssoError =new FieldError("employee","username",
+                    messageSource.getMessage("non.unique.username", new String[]{employee.getUsername()}, Locale.getDefault()));
+            result.addError(ssoError);
+            notifications.add(new Notification("alert-danger","Utente non modificato!"));
+            model.addAttribute("notifications",notifications);
+            model.addAttribute("edit",true);
+            model.addAttribute("roles",e.getUserProfiles());
+            return "registration";
+        }
+
+        if (photo!=null)
+        {
+            employee.setPhoto(photo.getBytes());
+        }
+        employeeService.updateEmployee(employee);
+
+        notifications.add(new Notification("alert-success","Utente modificato!"));
+        model.addAttribute("edit",true);
+        model.addAttribute("notifications",notifications);
+        model.addAttribute("roles",e.getUserProfiles());
+        return "registration";
+    }
+
+    @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
+    public String deleteEmployee(@PathVariable int id, ModelMap model)
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+        Employee e=employeeService.findById(id);
+        if (e==null)
+        {
+            notifications.add(new Notification("alert-danger","Utente non trovato"));
+            model.addAttribute("notifications",notifications);
+            return "index";
+        }
+        employeeService.deleteEmployeeById(id);
+
+        notifications.add(new Notification("alert-success","Utente eliminato con successo"));
+        model.addAttribute("notifications",notifications);
+        model.addAttribute("employees",getEmployees());
+        return "index";
+    }
+
+    /**
+     * This method handles Access-Denied redirect.
+     */
+    @RequestMapping(value = "/Access_Denied", method = RequestMethod.GET)
+    public String accessDeniedPage(ModelMap model)
+    {
+        return "accessDenied";
+    }
+
+    /**
+     * This method handles login GET requests.
+     * If users is already logged-in and tries to goto login page again, will be redirected to list page.
+     */
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String loginPage()
+    {
+        if (isCurrentAuthenticationAnonymous())
+        {
+            return "login";
+        } else {
+            return "redirect:/";
+        }
+    }
+
+    /**
+     * This method handles logout requests.
+     * Toggle the handlers if you are RememberMe functionality is useless in your app.
+     */
+    @RequestMapping(value="/logout", method = RequestMethod.GET)
+    public String logoutPage (HttpServletRequest request, HttpServletResponse response)
+    {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null)
+        {
+            persistentTokenBasedRememberMeServices.logout(request, response, auth);
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+        return "redirect:/login?logout";
+    }
+
+
+    private String getPrincipal()
+    {
+        String userName = null;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (principal instanceof UserDetails)
+        {
+            userName = ((UserDetails)principal).getUsername();
+        }
+        else {
+
+            userName = principal.toString();
+        }
+        return userName;
+    }
+
+    public boolean check(Authentication authentication, String username)
+    {
+        return this.getPrincipal().equals(username);
+    }
+
+
+    private boolean isCurrentAuthenticationAnonymous()
+    {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authenticationTrustResolver.isAnonymous(authentication);
+    }
+
+    /**
+     * This method will provide UserProfile list to views
+     */
+    @ModelAttribute("roles")
+    public List<UserProfile> initializeProfiles()
+    {
+        return userProfileService.findAll();
+    }
+
+    @ModelAttribute("skills")
+    public List<Skill> initializeSkills()
+    {
+        return skillService.findAllSkills();
+    }
+
+    @ModelAttribute("maritalStatues")
+    public List<MaritalStatus> initializeMaritalStatus()
+    {
+        return maritalStatusService.findAllStatus();
+    }
+
+    @ModelAttribute("loggedIN")
+    public String getLoggedIN()
+    {
+        if (isCurrentAuthenticationAnonymous())
+        {
+            return null;
+        }
+        return getPrincipal();
+    }
+
+    @ModelAttribute("employees")
+    public List<Employee> getEmployees()
+    {
+        return employeeService.findAllEmployees();
     }
 
 }
