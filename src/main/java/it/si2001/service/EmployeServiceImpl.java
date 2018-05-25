@@ -61,6 +61,7 @@ public class EmployeServiceImpl implements EmployeeService
             emp.setCountry(employee.getCountry());
             emp.setPassword(employee.getPassword());
             emp.setUsername(employee.getUsername());
+            emp.setPhoto(employee.getPhoto());
         }
     }
 

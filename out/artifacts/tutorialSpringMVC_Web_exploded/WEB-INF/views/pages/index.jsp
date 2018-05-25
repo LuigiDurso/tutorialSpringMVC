@@ -18,6 +18,7 @@
         <div class="table-responsive ">
             <table class="table table-striped " >
                 <tr>
+                    <th>Photo</th>
                     <th>Name</th>
                     <th>Surname</th>
                     <th>Country</th>
@@ -30,6 +31,7 @@
                 <tbody id="employeesTable">
                 <c:forEach items="${employees}" var="employee">
                     <tr>
+                        <td><img width="150" height="auto" class="img-responsive"  src="/getImage/${employee.username}"/></td>
                         <td><c:out value="${employee.name}"/></td>
                         <td><c:out value="${employee.surname}"/></td>
                         <td><c:out value="${employee.country}"/></td>
@@ -61,8 +63,8 @@
 <div class="modal fade" id="myModal" role="dialog">
     <div class="modal-dialog">
 
-        <!-- Modal content-->
-        <div class="modal-content">
+        <!-- Modal photo-->
+        <div class="modal-photo">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
                 <h4 class="modal-title">Conferma cancellazione</h4>

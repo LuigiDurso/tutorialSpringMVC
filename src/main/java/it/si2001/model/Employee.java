@@ -4,7 +4,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -54,6 +53,10 @@ public class Employee implements Serializable
             joinColumns = { @JoinColumn(name = "user_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_profile_id") })
     private Set<UserProfile> userProfiles;
+
+    @Lob @Basic(fetch = FetchType.LAZY)
+    @Column(name="image")
+    private byte[] photo;
 
     public Employee()
     {
@@ -145,5 +148,13 @@ public class Employee implements Serializable
 
     public void setSkillList(Set<Skill> skillList) {
         this.skillList = skillList;
+    }
+
+    public byte[] getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(byte[] photo) {
+        this.photo = photo;
     }
 }

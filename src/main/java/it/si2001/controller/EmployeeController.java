@@ -20,13 +20,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -68,6 +70,12 @@ public class EmployeeController
         this.userProfileService = userProfileService;
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder)
+    {
+        binder.setDisallowedFields("photo");
+    }
+
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String homePage(ModelMap model)
@@ -87,7 +95,9 @@ public class EmployeeController
     }
 
     @RequestMapping(value = "/newEmployee", method = RequestMethod.POST)
-    public String saveNewEmployee (@Valid Employee employee, BindingResult result, ModelMap model)
+    public String saveNewEmployee (@Valid Employee employee, BindingResult result, ModelMap model,
+                                                                                @RequestParam MultipartFile photo)
+                                                                                                    throws IOException
     {
         List<Notification> notifications=new ArrayList<Notification>();
 
@@ -103,7 +113,14 @@ public class EmployeeController
             FieldError ssoError =new FieldError("employee","username",
                     messageSource.getMessage("non.unique.username", new String[]{employee.getUsername()}, Locale.getDefault()));
             result.addError(ssoError);
+            notifications.add(new Notification("alert-danger","Utente non inserito!"));
+            model.addAttribute("notifications",notifications);
             return "registration";
+        }
+
+        if (photo!=null)
+        {
+            employee.setPhoto(photo.getBytes());
         }
 
         employeeService.saveEmployee(employee);
@@ -133,8 +150,21 @@ public class EmployeeController
         return "registration";
     }
 
+    @RequestMapping(value = "/getImage/{username}")
+    public void getImage(@PathVariable String username, ModelMap model, HttpServletResponse response) throws IOException
+    {
+        Employee e=employeeService.findByUsername(username);
+        response.setContentType("image/jpeg, image/jpg, image/png, image/gif");
+        response.getOutputStream().write(e.getPhoto());
+
+
+        response.getOutputStream().close();
+    }
+
     @RequestMapping(value = "/edit/{username}", method =  RequestMethod.POST)
-    public String updateEmployee(@Valid Employee employee, BindingResult result, @PathVariable String username, ModelMap model)
+    public String updateEmployee(@Valid Employee employee, BindingResult result,
+                                            @PathVariable String username, ModelMap model,
+                                                                @RequestParam MultipartFile photo) throws IOException
     {
         List<Notification> notifications=new ArrayList<Notification>();
 
@@ -151,7 +181,7 @@ public class EmployeeController
 
         if (result.hasErrors())
         {
-            notifications.add(new Notification("alert-danger","Utente non modificato!"));
+            notifications.add(new Notification("alert-danger","Utente non modificato!"+result.getAllErrors()));
             model.addAttribute("notifications",notifications);
             model.addAttribute("edit",true);
             model.addAttribute("roles",e.getUserProfiles());
@@ -170,6 +200,10 @@ public class EmployeeController
             return "registration";
         }
 
+        if (photo!=null)
+        {
+            employee.setPhoto(photo.getBytes());
+        }
         employeeService.updateEmployee(employee);
 
         notifications.add(new Notification("alert-success","Utente modificato!"));

@@ -12,7 +12,7 @@
 
 <div class="generic-container">
     <div class="well lead">User Registration Form</div>
-    <form:form  method="POST" modelAttribute="employee" class="form-horizontal">
+    <form:form  method="POST" modelAttribute="employee" class="form-horizontal" enctype="multipart/form-data">
         <form:hidden path="id"/>
 
         <div class="row">
@@ -125,6 +125,15 @@
                     <div class="has-error">
                         <form:errors path="userProfiles" class="help-inline"/>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-12">
+                <label class="col-md-3 control-lable" for="photo">Insert your photo</label>
+                <div class="col-md-7">
+                    <form:input type="file"  id="photo" path="photo" class="form-control input-sm" />
                 </div>
             </div>
         </div>
