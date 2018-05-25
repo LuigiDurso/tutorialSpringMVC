@@ -17,7 +17,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="firstName">First Name</label>
+                <label class="col-md-3 control-lable" for="firstName">First Name*</label>
                 <div class="col-md-7">
                     <form:input type="text" path="name" id="firstName" class="form-control input-sm"/>
                     <div class="has-error">
@@ -29,7 +29,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="lastName">Last Name</label>
+                <label class="col-md-3 control-lable" for="lastName">Last Name*</label>
                 <div class="col-md-7">
                     <form:input type="text" path="surname" id="lastName" class="form-control input-sm" />
                     <div class="has-error">
@@ -41,7 +41,7 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="birthDate">BirthDate</label>
+                <label class="col-md-3 control-lable" for="birthDate">BirthDate*</label>
                 <div class="col-md-7">
                     <form:input type="date" path="birthDate" id="birthDate" class="form-control input-sm" />
                     <div class="has-error">
@@ -63,36 +63,13 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="username">Username</label>
-                <div class="col-md-7">
-                    <form:input type="text" path="username" id="username" class="form-control input-sm" />
-                    <div class="has-error">
-                        <form:errors path="username" class="help-inline"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="password">Password</label>
-                <div class="col-md-7">
-                    <form:input type="password" path="password" id="password" class="form-control input-sm" />
-                    <div class="has-error">
-                        <form:errors path="password" class="help-inline"/>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <div class="row">
             <div class="form-group col-md-12">
                 <label class="col-md-3 control-lable" for="maritalStatus">Marital Status</label>
                 <div class="col-md-7">
-                    <form:select path="maritalStatus" class="form-control input-sm">
-                        <form:options items="${maritalStatues}" itemValue="statoCivile" itemLabel="statoCivile"/>
+                    <form:select path="maritalStatus" class="form-control input-sm" id="maritalStatus">
+                        <form:options items="${maritalStatues}" itemValue="id" itemLabel="statoCivile"/>
                     </form:select>
                     <div class="has-error">
                         <form:errors path="${maritalStatus}" class="help-inline"/>
@@ -103,27 +80,13 @@
 
         <div class="row">
             <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="skillList">Skills</label>
+                <label class="col-md-3 control-lable" for="skillList">Skills*</label>
                 <div class="col-md-7">
                     <form:select multiple="true" path="skillList" class="form-control input-sm">
-                        <form:options items="${skills}" itemValue="skill" itemLabel="skill"/>
+                        <form:options items="${skills}" itemValue="id" itemLabel="skill"/>
                     </form:select>
                     <div class="has-error">
                         <form:errors path="skillList" class="help-inline"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="form-group col-md-12">
-                <label class="col-md-3 control-lable" for="userProfiles">Role</label>
-                <div class="col-md-7">
-                    <form:select multiple="true" path="userProfiles" class="form-control input-sm" >
-                        <form:options items="${roles}" itemValue="type" itemLabel="type"/>
-                    </form:select>
-                    <div class="has-error">
-                        <form:errors path="userProfiles" class="help-inline"/>
                     </div>
                 </div>
             </div>
@@ -137,6 +100,60 @@
                 </div>
             </div>
         </div>
+
+        <c:choose>
+            <c:when test="${edit}">
+                <form:hidden path="username" id="username" class="form-control input-sm" />
+                <form:hidden path="password" id="password" class="form-control input-sm" />
+            </c:when>
+            <c:otherwise>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label class="col-md-3 control-lable" for="username">Username*</label>
+                        <div class="col-md-7">
+                            <form:input type="text" path="username" id="username" class="form-control input-sm" />
+                            <div class="has-error">
+                                <form:errors path="username" class="help-inline"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label class="col-md-3 control-lable" for="password">Password*</label>
+                        <div class="col-md-7">
+                            <form:input type="password" path="password" id="password" class="form-control input-sm" />
+                            <div class="has-error">
+                                <form:errors path="password" class="help-inline"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </c:otherwise>
+        </c:choose>
+
+        <sec:authorize access="hasRole('ADMIN')">
+            <div class="row">
+                <div class="form-group col-md-12">
+                    <label class="col-md-3 control-lable" for="userProfiles">Role*</label>
+                    <div class="col-md-7">
+                        <form:select path="userProfiles" class="form-control input-sm" >
+                            <form:options items="${roles}" itemValue="id" itemLabel="type"/>
+                        </form:select>
+                        <div class="has-error">
+                            <form:errors path="userProfiles" class="help-inline"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </sec:authorize>
+
+        <sec:authorize access="!hasRole('ADMIN')">
+            <form:select style="visibility:hidden;" path="userProfiles" class="form-control input-sm" >
+                <form:options items="${roles}" itemValue="id" itemLabel="type"/>
+            </form:select>
+        </sec:authorize>
 
 
         <div class="row">

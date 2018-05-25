@@ -30,6 +30,7 @@ public class AppConfig extends WebMvcConfigurerAdapter
     final
     MaritalStatusConverter maritalStatusConverter;
 
+
     @Autowired
     public AppConfig(SkillConverter skillConverter, RoleConverter roleConverter, MaritalStatusConverter maritalStatusConverter)
     {

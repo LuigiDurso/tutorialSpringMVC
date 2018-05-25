@@ -120,14 +120,18 @@ public class EmployeeController
 
         if (photo!=null)
         {
-            employee.setPhoto(photo.getBytes());
+            if (photo.getSize()!=0)
+            {
+                employee.setPhoto(photo.getBytes());
+            }
+
         }
 
         employeeService.saveEmployee(employee);
 
         notifications.add(new Notification("alert-success","Utente inserito!"));
         model.addAttribute("notifications",notifications);
-        return "registration";
+        return "redirect:/";
     }
 
     @RequestMapping(value = "/edit/{username}", method =  RequestMethod.GET)
@@ -142,8 +146,6 @@ public class EmployeeController
             model.addAttribute("notifications",notifications);
             return "index";
         }
-
-        model.addAttribute("roles",e.getUserProfiles());
 
         model.addAttribute("employee",e);
         model.addAttribute("edit",true);
@@ -175,16 +177,14 @@ public class EmployeeController
             notifications.add(new Notification("alert-danger","Utente non trovato"));
             model.addAttribute("notifications",notifications);
             model.addAttribute("edit",true);
-            model.addAttribute("roles",e.getUserProfiles());
             return "registration";
         }
 
         if (result.hasErrors())
         {
-            notifications.add(new Notification("alert-danger","Utente non modificato!"+result.getAllErrors()));
+            notifications.add(new Notification("alert-danger","Utente non modificato!"));
             model.addAttribute("notifications",notifications);
             model.addAttribute("edit",true);
-            model.addAttribute("roles",e.getUserProfiles());
             return "registration";
         }
 
@@ -196,20 +196,21 @@ public class EmployeeController
             notifications.add(new Notification("alert-danger","Utente non modificato!"));
             model.addAttribute("notifications",notifications);
             model.addAttribute("edit",true);
-            model.addAttribute("roles",e.getUserProfiles());
             return "registration";
         }
 
         if (photo!=null)
         {
-            employee.setPhoto(photo.getBytes());
+            if (photo.getSize()!=0)
+            {
+                employee.setPhoto(photo.getBytes());
+            }
         }
         employeeService.updateEmployee(employee);
 
         notifications.add(new Notification("alert-success","Utente modificato!"));
         model.addAttribute("edit",true);
         model.addAttribute("notifications",notifications);
-        model.addAttribute("roles",e.getUserProfiles());
         return "registration";
     }
 

@@ -18,6 +18,6 @@ public class MaritalStatusConverter implements Converter<Object,MaritalStatus>
 
     public MaritalStatus convert(Object o)
     {
-        return maritalStatusService.findByName((String) o);
+        return maritalStatusService.findById(Integer.parseInt((String) o));
     }
 }

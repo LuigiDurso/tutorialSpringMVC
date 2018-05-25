@@ -59,9 +59,10 @@ public class EmployeServiceImpl implements EmployeeService
                 emp.setSkillList(employee.getSkillList());
             }
             emp.setCountry(employee.getCountry());
-            emp.setPassword(employee.getPassword());
-            emp.setUsername(employee.getUsername());
-            emp.setPhoto(employee.getPhoto());
+            if (employee.getPhoto()!=null)
+            {
+                emp.setPhoto(employee.getPhoto());
+            }
         }
     }
 

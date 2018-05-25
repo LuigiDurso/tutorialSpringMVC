@@ -29,6 +29,6 @@ public class SkillConverter implements Converter<Object, Skill>
      */
     public Skill convert(Object element)
     {
-        return skillService.findByName((String) element);
+        return skillService.findById(Integer.parseInt((String)element));
     }
 }

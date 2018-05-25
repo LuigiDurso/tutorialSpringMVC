@@ -13,7 +13,7 @@ public class MaritalStatus implements Serializable
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMaritalStatus")
-    private int id;
+    private Integer id;
     @Column(name = "StatoCivile")
     private String statoCivile;
     @OneToMany(mappedBy="maritalStatus")
@@ -22,6 +22,14 @@ public class MaritalStatus implements Serializable
     public MaritalStatus()
     {
 
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public MaritalStatus(String statoCivile)

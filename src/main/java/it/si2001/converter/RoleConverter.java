@@ -18,6 +18,6 @@ public class RoleConverter implements Converter<Object,UserProfile>
 
     public UserProfile convert(Object element)
     {
-        return userProfileService.findByType((String) element);
+        return userProfileService.findById(Integer.parseInt((String) element));
     }
 }
