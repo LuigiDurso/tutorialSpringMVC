@@ -214,6 +214,33 @@ public class EmployeeController
         return "registration";
     }
 
+    @RequestMapping(value = "/changePW/{username}", method = RequestMethod.GET)
+    public String requestChangePW()
+    {
+        return "changePassword";
+    }
+
+    @RequestMapping(value = "/changePW/{username}", method = RequestMethod.POST)
+    public String changePW(ModelMap model, @RequestParam String oldPassword, @RequestParam String newPassword,
+                                                                                            @PathVariable String username)
+    {
+        List<Notification> notifications=new ArrayList<Notification>();
+
+        Employee e=employeeService.findByUsername(username);
+        if (!e.getPassword().equals(oldPassword))
+        {
+            notifications.add(new Notification("alert-danger","Vecchia password non corretta!"));
+            model.addAttribute("notifications",notifications);
+            return "changePassword";
+        }
+        e.setPassword(newPassword);
+        employeeService.changePassword(e);
+
+        notifications.add(new Notification("alert-success","Password cambiata!"));
+        model.addAttribute("notifications",notifications);
+        return "changePassword";
+    }
+
     @RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
     public String deleteEmployee(@PathVariable int id, ModelMap model)
     {

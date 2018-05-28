@@ -36,4 +36,10 @@
         <put-attribute name="body" value="/WEB-INF/views/pages/deniedPage.jsp" />
     </definition>
 
+    <!-- Change password page -->
+    <definition name="changePassword" extends="base-definition">
+        <put-attribute name="title" value="ChangeYourPassword" />
+        <put-attribute name="body" value="/WEB-INF/views/pages/changePassword.jsp" />
+    </definition>
+
 </tiles-definitions>

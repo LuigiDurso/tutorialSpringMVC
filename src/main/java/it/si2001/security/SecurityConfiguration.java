@@ -54,6 +54,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter
                 .access("hasRole('ADMIN')")
                 .antMatchers("/edit/{username}")
                 .access("@employeeController.check(authentication,#username) or hasRole('ADMIN')")
+                .antMatchers("/changePW/{username}")
+                .access("@employeeController.check(authentication,#username)")
                 .antMatchers("/delete/**")
                 .access("hasRole('ADMIN')")
                 .and().formLogin().loginPage("/login")

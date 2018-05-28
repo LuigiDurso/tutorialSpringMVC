@@ -32,8 +32,12 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
+                            <c:url value="/changePW/${loggedIN}" var = "changePW"></c:url>
+                            <a href="${changePW}" class="btn btn-default">Change your password</a>
+                        </li>
+                        <li>
                             <c:url value="/edit/${loggedIN}" var = "editURL"></c:url>
-                            <a href="${editURL}" class="btn btn-default">Edit you profile</a>
+                            <a href="${editURL}" class="btn btn-default">Edit your profile</a>
                         </li>
                     </ul>
                 </li>

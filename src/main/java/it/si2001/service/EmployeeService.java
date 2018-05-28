@@ -15,6 +15,8 @@ public interface EmployeeService
 
     void updateEmployee(Employee employee);
 
+    void changePassword(Employee employee);
+
     void deleteEmployeeById(int id);
 
     List<Employee> findAllEmployees();

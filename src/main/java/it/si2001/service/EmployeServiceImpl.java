@@ -66,6 +66,13 @@ public class EmployeServiceImpl implements EmployeeService
         }
     }
 
+    public void changePassword(Employee employee)
+    {
+        Employee emp=dao.findById(employee.getId());
+
+        emp.setPassword(employee.getPassword());
+    }
+
     public void deleteEmployeeById(int id)
     {
         dao.deleteEmployeeById(id);
